@@ -169,6 +169,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .glabel{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--tx-lt)}
 .glabel .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
 .guide-hdr{font-size:13px;font-weight:700;color:var(--tx-md);padding:0 0 10px;border-bottom:2px solid var(--bdr);margin-bottom:16px}
+/* FOLLOW-UP PRACTICE */
+.fq-wrap{background:#fffbeb;border:2px solid #fbbf24;border-radius:10px;padding:14px 16px;margin-top:14px}
+.fq-hdr{font-size:12px;font-weight:700;color:#92400e;text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.fq-card{background:white;border-radius:8px;border:1.5px solid var(--bdr);padding:16px;margin-bottom:10px;border-left:4px solid var(--warn)}
+.fq-card.ok{border-left-color:var(--ok)}.fq-card.bad{border-left-color:var(--err)}
+.fq-num{font-size:10.5px;font-weight:700;color:var(--tx-lt);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
+.fq-txt{font-size:13.5px;font-weight:500;line-height:1.6;margin-bottom:12px}
+.fq-result{margin-top:12px;padding:10px 14px;border-radius:7px;font-size:13px;line-height:1.6;display:none}
+.fq-result.show-c{display:block;background:var(--ok-lt);border:1px solid #86efac;color:#15803d}
+.fq-result.show-w{display:block;background:var(--err-lt);border:1px solid #fca5a5;color:#991b1b}
+.practice-btn{display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:9px 16px;border-radius:8px;border:2px solid #fbbf24;background:#fffbeb;color:#92400e;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s}
+.practice-btn:hover{background:#fef3c7;border-color:#f59e0b}
+.fq-complete{background:#f0fdf4;border:1.5px solid #86efac;border-radius:8px;padding:10px 14px;font-size:13px;color:#15803d;font-weight:600;margin-top:8px}
 /* RESPONSIVE */
 @media(max-width:860px){#sb{display:none}#main{margin-left:0}.g2,.g3{grid-template-columns:1fr}.sec{padding:18px 14px}.fb-body{grid-template-columns:1fr}}
 </style>
@@ -1724,6 +1737,25 @@ function ck(pfx,qi,chosen,correct,cid){
     ${q.vis?`<div class="fb-vis"><div class="fb-vis-lbl">📊 Visual</div><div id="${visId}"></div></div>`:''}
   </div>`;
   if(q.vis)setTimeout(()=>drawVis(visId,q.vis),20);
+  // Inject "Practice More" button when wrong and followup questions exist
+  if(!isOk){
+    const concept=q.vis||'';
+    if(FOLLOWUP[concept]){
+      const fqId=cid+'_fq';
+      const card=document.getElementById(cid);
+      if(card&&!document.getElementById('fqctn_'+fqId)){
+        const btn=document.createElement('button');
+        btn.id='fqbtn_'+fqId;
+        btn.className='practice-btn';
+        btn.innerHTML='💪 Practice This Concept &rarr;';
+        btn.onclick=()=>launchFollowup(concept,fqId,btn);
+        const fqctn=document.createElement('div');
+        fqctn.id='fqctn_'+fqId;
+        card.appendChild(btn);
+        card.appendChild(fqctn);
+      }
+    }
+  }
   const key=pfx+qi;
   if(scores[key]===undefined){scores[key]=isOk?1:0;if(pfx==='full-')updProg();}
 }
@@ -2237,6 +2269,188 @@ function _dgpdPerf(){
     'font-family':'system-ui,sans-serif','font-weight':'600'});dmr.textContent='← D = MR (each unit priced at WTP)';g.s.appendChild(dmr);
   _annBox(g,22.5,55,'Firm produces Qc','#16a34a',3,-4);
   _annBox(g,22.5,48,'(same as competition!)','#475569',3,-4);
+}
+
+// ════════════════════════════════════════════════════
+// FOLLOW-UP PRACTICE SYSTEM
+// ════════════════════════════════════════════════════
+const FOLLOWUP = {
+  'profit-max':[
+    {text:'A monopolist currently has MR = $30 and MC = $20 at its current output level. To maximize profit, the firm should:',
+     opts:['Reduce output — profit falls when output is too high','Increase output — each extra unit adds $30 to revenue but only costs $20 to make, so profit rises','Maintain current output — it is already at the profit maximum','Shut down immediately — it cannot be making a profit'],
+     ans:1,exp:'When MR > MC, producing one more unit adds MORE to revenue than to cost → profit increases. The firm should keep increasing output until MR = MC. Here $30 > $20, so produce more. Only when MR finally equals MC is profit maximized.'},
+    {text:'A monopolist produces 8 units at a price of $24. ATC at 8 units = $18. What is total economic profit?',
+     opts:['$6 — that is the profit per unit','$48 = (P − ATC) × Q = $6 × 8 units','$192 = total revenue P × Q','$144 = total cost ATC × Q'],
+     ans:1,exp:'Profit = (P − ATC) × Q = ($24 − $18) × 8 = $6 × 8 = <strong>$48</strong>. The $6 is profit PER UNIT. To get total profit, multiply by quantity = 8. This is the area of the green profit rectangle on the graph.'},
+    {text:'Firm A earns $100 revenue and $120 in total costs. What should it do to maximize profit (or minimize loss)?',
+     opts:['Shut down immediately if P < AVC — fixed costs are unavoidable in the short run','Keep operating only if price covers at least AVC — the firm can minimize its loss','Raise price — this always fixes a loss','Reduce ATC by hiring more workers'],
+     ans:1,exp:'The shutdown rule: if P ≥ AVC, stay open. Even with a loss (P < ATC), the firm recovers at least its variable costs plus some fixed costs — better than shutting down and absorbing ALL fixed costs with zero revenue. If P < AVC, shut down immediately — every unit produced makes the loss worse.'}
+  ],
+  'elastic-range':[
+    {text:'A monopolist raises price from $10 to $12, and total revenue FALLS. Demand in this price range is:',
+     opts:['Inelastic — price and TR move in the same direction when inelastic','Elastic — when TR falls as price rises, demand is elastic (|Ed| > 1)','Unit elastic — TR does not respond to price changes','Perfectly inelastic — consumers will buy the same amount regardless'],
+     ans:1,exp:'<strong>Total Revenue Test:</strong> if TR moves in the OPPOSITE direction as price → elastic demand. TR fell when P rose → elastic. When demand is elastic, consumers are sensitive to price — the quantity lost more than offsets the higher price per unit. MR is positive in the elastic range.'},
+    {text:'When MR = 0, a monopolist\'s total revenue is:',
+     opts:['Zero','At its minimum value','At its maximum — MR=0 means one more unit adds exactly $0 to TR, so TR cannot go higher','Equal to total cost at break-even'],
+     ans:2,exp:'MR = ΔTRT/ΔQ. When MR = 0, the next unit adds nothing to total revenue — TR has peaked. To the left (MR > 0), TR was rising. To the right (MR < 0), TR will fall. This is the boundary between the elastic range (MR > 0) and inelastic range (MR < 0).'},
+    {text:'A profit-maximizing monopolist will NEVER operate in the inelastic range of demand. Why?',
+     opts:['Because inelastic demand means consumers are not willing to pay high prices','Because in the inelastic range MR < 0 — reducing output would raise TR AND reduce TC, increasing profit — so the firm is never maximizing profit there','Because government regulations prevent it','Because ATC is always above demand in the inelastic range'],
+     ans:1,exp:'In the inelastic range, MR < 0. This means selling one more unit actually REDUCES total revenue. A profit-maximizing firm would reduce output until MR ≥ 0. At the profit-max point MR = MC ≥ 0, which is always in the elastic range (MR > 0). The monopolist never voluntarily operates where MR < 0.'}
+  ],
+  'lumpsum':[
+    {text:'A $400/year license fee is imposed on a monopolist. Which of the following changes?',
+     opts:['Profit-maximizing quantity decreases','Price charged to consumers increases','Average total cost at every output level increases, but quantity and price are unchanged','Marginal cost increases by $400 per unit'],
+     ans:2,exp:'A license fee is a FIXED cost — it does not vary with output. It shifts ATC upward at every quantity (adding $400/Q to ATC), but has zero effect on MC. Since profit-maximization uses MR = MC, and neither MR nor MC moved, Q* and P* are completely unchanged. Only profit shrinks (or turns into a loss) because ATC rose.'},
+    {text:'A firm paying a $1,000/month rent (fixed cost) gets a rent reduction to $600/month. In the short run:',
+     opts:['Output increases because the firm is more profitable','Output stays the same, but economic profit increases','Price decreases because the firm passes savings to consumers','Both price and output change because all costs affect MR = MC'],
+     ans:1,exp:'Rent is a fixed cost. A fixed cost reduction does NOT change MC or MR. The profit-max condition MR = MC is unaffected → Q* and P* are identical. The ONLY change is that ATC is lower at every output level, so the profit rectangle is larger → economic profit increases. Fixed costs change profit but never change the optimal quantity or price.'}
+  ],
+  'perunit':[
+    {text:'A $5-per-unit tax is imposed. Which cost curves shift upward?',
+     opts:['Only ATC','Only MC','MC, AVC, and ATC all shift upward by exactly $5','Only the demand curve'],
+     ans:2,exp:'A per-unit tax adds $5 to EVERY unit produced → it is a variable cost. This raises: <strong>MC</strong> by $5 (each additional unit costs $5 more). <strong>AVC</strong> by $5 (AVC = VC/Q, and VC increases by $5 × Q total, so AVC = $5 more). <strong>ATC</strong> by $5 (= AVC + AFC, AVC rises $5). All three shift up equally by the full tax amount.'},
+    {text:'After a per-unit tax is imposed on a monopolist, compared to before the tax:',
+     opts:['Output increases, price falls — the tax lowers costs','Output stays the same — the tax only affects fixed costs','Output decreases, price rises — MC shifts up, moving MR=MC to a lower Q','Output stays the same, but price rises to recover the tax'],
+     ans:2,exp:'Per-unit tax → MC shifts up → new MR=MC intersection is HIGHER and to the LEFT. This means the profit-maximizing quantity DECREASES. At the new (lower) Q*, the demand curve is at a HIGHER price. So Q falls and P rises. Contrast with a lump-sum tax where both Q and P are unchanged.'}
+  ],
+  'dwl':[
+    {text:'The deadweight loss in a monopoly exists because:',
+     opts:['The monopolist earns economic profit that rightfully belongs to consumers','Output is restricted below the competitive level — units between Q* and Qc would benefit consumers more than they cost to produce, but are never made','The monopolist charges a price above ATC','Government regulation creates inefficiency'],
+     ans:1,exp:'DWL = foregone surplus from underproduction. For every unit between Q* and Qc (where P = MC), consumers\' willingness to pay (demand curve) EXCEEDS the marginal cost. These trades would create value for society — but the monopolist does not produce them. This uncaptured value is DWL. Neither consumer nor producer gets it; it is simply lost.'},
+    {text:'Perfect price discrimination eliminates deadweight loss because:',
+     opts:['The firm charges lower prices than a standard monopolist','The firm produces the competitive quantity — all units where demand ≥ MC are produced, leaving no profitable trades undone','The firm earns zero profit under price discrimination','Consumers pay less than their willingness to pay'],
+     ans:1,exp:'Standard monopoly creates DWL by stopping at Q* (too few units). Under perfect PD, the firm can charge each consumer their exact WTP — so it profitably sells EVERY unit from Q* all the way to Qc (where demand = MC). Every potentially beneficial trade happens → DWL = 0. Output equals the competitive level. The firm captures all consumer surplus as profit, but allocative efficiency is achieved.'}
+  ],
+  'nat-mono':[
+    {text:'A natural monopoly is defined by:',
+     opts:['Government granting an exclusive franchise to one firm','Long-run average total cost (LRATC) continuing to decline throughout the entire relevant range of market demand','A firm using patents to block competition','One firm controlling a key raw material input'],
+     ans:1,exp:'A natural monopoly exists when LRATC never stops declining over the relevant demand range. This means one large firm can serve the whole market at LOWER average cost than two or more smaller firms. Breaking it up would INCREASE average costs — hence the market "naturally" supports only one firm. Examples: local water utility, electrical grid.'},
+    {text:'Under socially optimal (P = MC) pricing for a natural monopoly, the firm:',
+     opts:['Earns above-normal economic profit','Earns zero economic profit — this is the break-even point','Takes an economic loss because MC < ATC for natural monopolies — and likely needs a government subsidy','Produces at the minimum point of ATC'],
+     ans:2,exp:'For a natural monopoly, ATC is always declining → MC is always BELOW ATC (that\'s what causes ATC to fall). At the socially optimal quantity where demand = MC, the price equals MC, but ATC is still above P. So P < ATC → economic loss. A government subsidy is needed to keep the firm operational. This is why regulators often prefer <strong>fair-return pricing (P = ATC)</strong> which avoids the need for a subsidy.'}
+  ],
+  'mc-lr':[
+    {text:'In the long-run equilibrium of monopolistic competition, which statement is FALSE?',
+     opts:['P = ATC (zero economic profit)','P > MC (not allocatively efficient)','The firm produces at minimum average total cost (productive efficiency)','Economic profit = 0'],
+     ans:2,exp:'In MC long-run equilibrium: <strong>P = ATC</strong> ✓ (free entry drives profit to zero), <strong>P > MC</strong> ✓ (tangency is on downward-sloping ATC, above MC), and <strong>economic profit = 0</strong> ✓. The FALSE statement is "produces at minimum ATC." The firm produces with EXCESS CAPACITY — to the LEFT of the min-ATC quantity. Only perfect competition achieves min-ATC productive efficiency in the long run.'},
+    {text:'Excess capacity in monopolistic competition means the firm produces:',
+     opts:['More output than the minimum-average-cost (efficient) quantity','Less output than the minimum-average-cost quantity — it operates on the downward-sloping part of ATC','Zero output — it has left the market','The same output as a perfectly competitive firm in LR'],
+     ans:1,exp:'Excess capacity: the firm\'s Q* is to the LEFT of the ATC minimum. The ATC is still declining at Q*, meaning the firm could produce MORE at lower average cost — but doesn\'t because it would require lowering price and reducing profit. This excess capacity is a form of productive inefficiency unique to imperfect competition. In perfect competition, firms operate at min ATC (no excess capacity).'}
+  ],
+  'mc-entry':[
+    {text:'Monopolistically competitive firms earn short-run profit. In the long run, each firm\'s demand curve will:',
+     opts:['Shift right — profits attract customers from new firms to existing firms','Shift left — new firms enter with similar products, stealing some customers from existing firms','Stay the same — profits do not affect demand','Become perfectly elastic like perfect competition'],
+     ans:1,exp:'Low barriers to entry mean new firms can enter with differentiated products. Each new entrant takes some customers from existing firms → each existing firm\'s demand curve shifts LEFT (fewer customers at each price). This reduces revenues and profit. Entry continues until economic profit = 0 (demand tangent to ATC from above).'},
+    {text:'When a monopolistically competitive firm exits the market due to losses, the remaining firms experience:',
+     opts:['Their demand curves shift left — less competition means consumers switch to other industries','Their demand curves shift right — the exiting firm\'s customers now buy from surviving firms','No change — individual firms are not affected by competitors exiting','Their ATC curves shift down — lower industry output reduces costs'],
+     ans:1,exp:'Exit is the mirror image of entry. When a firm exits, its former customers redistribute to the remaining firms → each remaining firm gains some market share. Demand curve shifts RIGHT → revenue increases → losses shrink. Exit continues until losses disappear (demand again tangent to ATC at zero economic profit from below).'}
+  ],
+  'dominant-strat':[
+    {text:'Player A\'s best response is "High" regardless of whether Player B plays High or Low. This means Player A:',
+     opts:['Has a dominated strategy — High is never the best choice','Has a dependent strategy — the best choice changes with B\'s action','Has a dominant strategy — High is unconditionally the best choice','Has found the Nash equilibrium unilaterally'],
+     ans:2,exp:'A dominant strategy is one that is the BEST response regardless of what the rival does. "High is always best for A whether B plays High or Low" = dominant strategy. Player A should always play High without even needing to observe or guess B\'s action. This is the strongest possible strategic recommendation.'},
+    {text:'To find Player A\'s dominant strategy in a 2×2 payoff matrix, you should:',
+     opts:['Look for the cell where Player A\'s payoff is highest overall','For each of Player B\'s strategies, identify Player A\'s best response. If A\'s best response is always the same strategy, that is A\'s dominant strategy','Look for the highest total payoff (A + B combined)','Find the strategy that maximizes Player B\'s payoff'],
+     ans:1,exp:'Step-by-step: (1) "If B plays Strategy 1, what is A\'s best choice?" — circle it. (2) "If B plays Strategy 2, what is A\'s best choice?" — circle it. (3) Do both circles fall in the same row? If YES → that row strategy is A\'s dominant strategy. If NO → A has a dependent strategy (no dominant). The circles represent best responses — two circles in one row = dominant strategy.'}
+  ],
+  'nash-eq':[
+    {text:'At a Nash equilibrium, which statement is TRUE?',
+     opts:['Both players earn the maximum possible payoff in the game','Neither player can improve their payoff by unilaterally switching their strategy — each is already playing their best response to the other','Both players must have the same strategy (e.g., both cooperate or both defect)','The combined payoff of both players is maximized'],
+     ans:1,exp:'Nash equilibrium: each player is doing the best they can GIVEN what the other player is doing. No one has incentive to deviate alone. Note: Nash equilibrium does NOT require maximum individual payoff, same strategies, or maximum joint payoff — the Prisoner\'s Dilemma shows Nash can make both players worse off than cooperation.'},
+    {text:'[Matrix] Firm A vs Firm B: High/High=$15/$15; High/Low=$5/$20; Low/High=$20/$5; Low/Low=$10/$10. What is the Nash equilibrium?',
+     opts:['High/High ($15,$15)','High/Low ($5,$20)','Low/Low ($10,$10) — both firms have dominant strategy = Low','Low/High ($20,$5)'],
+     ans:2,exp:'<strong>Firm A:</strong> If B=High → $20(L)>$15(H) → circle Low. If B=Low → $10(L)>$5(H) → circle Low. Dominant = Low. <strong>Firm B:</strong> same analysis → dominant = Low. Both circles in Low/Low → <strong>Nash = Low/Low ($10,$10)</strong>. This is a Prisoner\'s Dilemma: High/High ($15,$15) is better for both, but the dominant strategy pulls both to Low/Low.'}
+  ],
+  'pd-d-eq-mr':[
+    {text:'Under perfect price discrimination, why does D = MR?',
+     opts:['Because the firm operates as a price taker with perfectly elastic demand','Because each unit is sold at a different price — selling to one more consumer at a lower price does NOT reduce revenue on previous units, so MR = that unit\'s price = its spot on the demand curve','Because the firm\'s marginal cost equals zero','Because consumers have perfectly inelastic demand'],
+     ans:1,exp:'In standard monopoly, lowering price to sell unit #11 means units 1–10 also sell at the lower price → MR < P. Under perfect PD, each consumer pays their exact WTP independently — selling unit #11 at $50 does NOT require charging units 1–10 less. Revenue from unit #11 = exactly $50 = its demand price. Hence MR = D throughout.'},
+    {text:'Compared to a standard non-discriminating monopoly, perfect price discrimination:',
+     opts:['Produces less output and earns less profit','Produces the same output but earns more profit','Produces MORE output (equal to competitive level), earns maximum profit, CS = 0, DWL = 0','Produces less output, but consumer surplus increases'],
+     ans:2,exp:'Perfect PD: the firm sells to EVERY consumer willing to pay at least MC (all the way to Qc, the competitive output). Output is HIGHER than standard monopoly Q*. Consumer surplus = 0 (all captured as profit). DWL = 0 (no output is foregone). Profit = maximum possible (entire area under demand, above MC). All three improvements vs. standard monopoly.'}
+  ],
+  'excess-cap':[
+    {text:'Excess capacity in a monopolistically competitive firm means:',
+     opts:['The firm operates to the RIGHT of min-ATC, where ATC is rising','The firm operates to the LEFT of min-ATC — it could produce more at lower average cost but does not','The firm has too many employees relative to output','The firm earns positive economic profit in the short run'],
+     ans:1,exp:'Excess capacity = operating on the DOWNWARD-SLOPING portion of ATC, left of the minimum point. The firm\'s ATC is still falling at Q* — meaning it could produce more units at a LOWER average cost. This unused productive potential is "excess capacity." Perfect competition has NO excess capacity — PC firms produce exactly at min ATC in the long run.'},
+    {text:'Why doesn\'t a monopolistically competitive firm just expand output to the min-ATC point to eliminate excess capacity?',
+     opts:['Government regulations prevent it','Because expanding beyond Q* would require lowering price on all units (downward-sloping demand), which would reduce profit below the MR=MC level','Because the firm lacks the capital to expand','Because ATC stops falling before the min-ATC point is reached'],
+     ans:1,exp:'The firm maximizes profit at Q* where MR = MC. Expanding beyond Q* would require lowering price to sell more (downward-sloping demand). The additional revenue (MR) from extra units is LESS than the marginal cost of producing them — profit would fall. The firm is stuck with excess capacity as an unavoidable consequence of product differentiation and downward-sloping demand.'}
+  ],
+  'mr-below-d':[
+    {text:'A monopolist sells 10 units at $80 each, but must lower price to $78 to sell 11 units. What is the MR of the 11th unit?',
+     opts:['$78 — the price of the 11th unit','$58 = $78 − ($2 × 10 units) — the price gain minus the revenue lost on previous units','$2 — the price decrease needed','$80 — the original price'],
+     ans:1,exp:'MR = ΔTR = New TR − Old TR = (11 × $78) − (10 × $80) = $858 − $800 = $58. Alternatively: MR = New price − (Price drop × Previous units) = $78 − ($2 × 10) = $78 − $20 = $58. The $2 price cut applies to ALL 10 previous units → loses $20 in revenue on them. So MR ($58) < P ($78).'},
+    {text:'Why does the MR curve lie BELOW the demand curve for a monopolist?',
+     opts:['Because the monopolist produces less than a competitive firm','Because to sell one more unit, the monopolist must lower price on ALL units — the lost revenue on existing units makes MR less than the new price','Because the monopolist has higher costs than a competitive firm','Because MR includes the effect of taxes on price'],
+     ans:1,exp:'The monopolist faces the entire downward-sloping market demand. To increase sales by 1 unit, it must LOWER the price — and this lower price applies to every unit it was already selling. The revenue GAINED from the new unit is partially OFFSET by the revenue LOST on existing units. Net effect: MR = New Price − (Price Drop × Old Quantity) < New Price.'}
+  ]
+};
+
+let _fqUsed={};
+
+function launchFollowup(concept, fqId, btn){
+  btn.style.display='none';
+  const ctn=document.getElementById('fqctn_'+fqId);
+  if(!ctn)return;
+  const bank=FOLLOWUP[concept]||[];
+  if(!bank.length){ctn.innerHTML='<div class="cb g" style="font-size:13px">No extra practice available for this concept yet.</div>';return;}
+  if(!_fqUsed[concept])_fqUsed[concept]=0;
+  const start=_fqUsed[concept];
+  const batch=bank.slice(start,start+2);
+  if(!batch.length){
+    ctn.innerHTML='<div class="fq-complete">✓ You\'ve completed all practice questions for this concept! Review the explanation above.</div>';
+    return;
+  }
+  _fqUsed[concept]=start+batch.length;
+  const label=concept.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+  ctn.innerHTML=`<div class="fq-wrap"><div class="fq-hdr"><span>💪</span><span>Extra Practice — ${label} (${batch.length} question${batch.length>1?'s':''})</span></div>
+  ${batch.map((q,i)=>`<div class="fq-card" id="fqc_${fqId}_${start+i}">
+    <div class="fq-num">Practice Question ${start+i+1}</div>
+    <div class="fq-txt">${q.text}</div>
+    <div class="opts" id="fqo_${fqId}_${start+i}">
+      ${q.opts.map((o,j)=>`<button class="opt" onclick="ckFQ('${fqId}',${start+i},${j},${q.ans},'${concept}')">${String.fromCharCode(65+j)}. ${o}</button>`).join('')}
+    </div>
+    <div class="fq-result" id="fqr_${fqId}_${start+i}"></div>
+  </div>`).join('')}</div>`;
+}
+
+function ckFQ(fqId,qi,chosen,correct,concept){
+  const opts=document.querySelectorAll(`#fqo_${fqId}_${qi} .opt`);
+  opts.forEach(b=>b.disabled=true);
+  opts[chosen].classList.add(chosen===correct?'ca':'wa');
+  if(chosen!==correct)opts[correct].classList.add('ca');
+  const card=document.getElementById(`fqc_${fqId}_${qi}`);
+  card.classList.add(chosen===correct?'ok':'bad');
+  const res=document.getElementById(`fqr_${fqId}_${qi}`);
+  const isOk=chosen===correct;
+  const q=(FOLLOWUP[concept]||[])[qi]||{};
+  res.className='fq-result '+(isOk?'show-c':'show-w');
+  res.innerHTML=(isOk?'<strong>✓ Correct!</strong> ':'<strong>✗ Incorrect.</strong> ')+(q.exp||'');
+  // After all questions in batch answered, offer more or show completion
+  const wrap=card.closest('.fq-wrap');
+  if(!wrap)return;
+  const allCards=wrap.querySelectorAll('.fq-card');
+  const allDone=[...allCards].every(c=>c.classList.contains('ok')||c.classList.contains('bad'));
+  if(allDone&&!wrap.querySelector('.fq-done')){
+    const allOk=[...allCards].every(c=>c.classList.contains('ok'));
+    const done=document.createElement('div');
+    done.className='fq-done';
+    done.style.cssText='margin-top:10px;display:flex;flex-direction:column;gap:8px';
+    if(allOk) done.innerHTML='<div class="fq-complete">🎉 All correct! Concept strengthened.</div>';
+    const remaining=(FOLLOWUP[concept]||[]).length-(_fqUsed[concept]||0);
+    if(remaining>0){
+      const more=document.createElement('button');
+      more.className='practice-btn';more.style.marginTop='4px';
+      more.innerHTML=`↩ Try ${Math.min(2,remaining)} More Questions`;
+      more.onclick=()=>{
+        const ctn=document.getElementById('fqctn_'+fqId);
+        if(ctn){ctn.innerHTML='';launchFollowup(concept,fqId,{style:{}});}
+      };
+      done.appendChild(more);
+    }
+    wrap.appendChild(done);
+  }
 }
 
 // ════════════════════════════════════════════════════
