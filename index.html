@@ -113,7 +113,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .fb-hdr{padding:10px 14px;font-size:13px;font-weight:700}
 .oks .fb-hdr{background:var(--ok-lt);color:var(--ok);border-bottom:1px solid #86efac}
 .bads .fb-hdr{background:var(--err-lt);color:#991b1b;border-bottom:1px solid #fca5a5}
-.fb-body{padding:12px 14px;background:#fff;display:grid;grid-template-columns:1fr 300px;gap:16px;align-items:start}
+.fb-body{padding:12px 14px;background:#fff;display:grid;grid-template-columns:1fr 340px;gap:16px;align-items:start}
 .fb-txt{font-size:13px;color:var(--tx-md);line-height:1.7}
 .fb-txt strong{color:var(--tx)}
 .fb-vis{border:1px solid var(--bdr);border-radius:7px;overflow:hidden;background:#fafafa;min-height:120px}
@@ -1087,7 +1087,7 @@ function drawNatMono(){
 // PRICE DISCRIMINATION GRAPHS
 // ════════════════════════════════════════════════════
 function drawPD(){
-  (()=>{const g=new G('g-pd-std',{W:580,H:365,mQ:28,mP:110});
+  (()=>{const g=new G('g-pd-std',{W:460,H:290,mQ:28,mP:110});
     g.tri([[0,100],[0,PS],[QS,PS]],'#3b82f6',.18);
     g.rect(0,ATC_S,QS,PS,'#22c55e',.22);
     g.tri([[QS,PS],[QS,MC_S],[QC,PC]],'#ef4444',.32);
@@ -1097,7 +1097,7 @@ function drawPD(){
     g.dot(QS,PS,'#2563eb');g.axL(QS,'Q*');g.prL(PS,'P*');g.prL(ATC_S,'ATC*');
     g.aL(4,(100+PS)/2,'CS','#2563eb');g.aL(QS/2,(PS+ATC_S)/2,'π','#16a34a');g.aL(QS+2,(PS+MC_S)/2,'DWL','#dc2626');
   })();
-  (()=>{const g=new G('g-pd-perf',{W:580,H:365,mQ:28,mP:110});
+  (()=>{const g=new G('g-pd-perf',{W:460,H:290,mQ:28,mP:110});
     g.tri([[0,100],[0,10],[QC,PC]],'#22c55e',.22);
     g.vd(QC,0,PC,'#16a34a');g.hd(PC,0,QC,'#16a34a');
     g.cv(D,.5,27,'#2563eb',3,'','D = MR');
@@ -1380,6 +1380,103 @@ const VIS={
     </table>
     <div style="font-size:10px;color:#374151;line-height:1.5;margin-top:4px"><strong>BetterCook:</strong> Maintain always better → dominant = Maintain. <strong>Scheff:</strong> If BC Maintains → Not Adv ($250>$150); if BC Lowers → Adv ($650>$450) → <strong>No dominant (Dependent).</strong> ★ Nash = Maintain/Not Adv = $600/$250.</div>`;
   },
+  // ── GAME THEORY PAYOFF MATRICES ──────────────────────────────────────────────
+  // Dominant strategy demo (generic advertising example)
+  'dominant-strat':id=>{_matVis(id,{
+    title:'How to Find Dominant Strategy (Example)',
+    rp:'Firm A',cp:'Firm B',rs:['Advertise','Don\'t Adv.'],cs:['Advertise','Don\'t Adv.'],
+    cells:[[{a:'$30',b:'$30'},{a:'$50',b:'$10'}],[{a:'$10',b:'$50'},{a:'$40',b:'$40'}]],
+    crA:[[0,0],[0,1]], // A always prefers Advertise (30>10 and 50>40)
+    crB:[[0,0],[1,0]], // B always prefers Advertise (30>10 and 50>40)
+    nash:[0,0],
+    steps:['<strong>Firm A:</strong> Adv always better ($30>$10; $50>$40) → Dominant = Advertise',
+           '<strong>Firm B:</strong> Adv always better ($30>$10; $50>$40) → Dominant = Advertise',
+           '<strong>★ Nash = Both Advertise ($30,$30)</strong> — Prisoner\'s Dilemma: Both Don\'t ($40,$40) would be better!']
+  })},
+  // Cromie vs Clifford (AP exam)
+  'nash-cromie':id=>{_matVis(id,{
+    title:'Cromie Corp vs. Clifford Inc. — Location Game',
+    rp:'Cromie',cp:'Clifford',rs:['West','East'],cs:['West','East'],
+    cells:[[{a:'$1,000',b:'$2,000'},{a:'$2,500',b:'$3,000'}],[{a:'$5,500',b:'$5,000'},{a:'$3,500',b:'$1,000'}]],
+    crA:[[1,0],[1,1]], // Cromie always prefers East
+    crB:[[0,1],[1,0]], // Clifford: East if Cromie West, West if Cromie East
+    nash:[1,0],
+    steps:['<strong>Cromie:</strong> East always better ($5,500>$1,000; $3,500>$2,500) → Dominant = East',
+           '<strong>Clifford:</strong> East if Cromie West ($3,000>$2,000); West if Cromie East ($5,000>$1,000) → No dominant (dependent)',
+           '<strong>★ Nash = Cromie East / Clifford West = $5,500/$5,000</strong>']
+  })},
+  // Bender vs Jibson (AP exam)
+  'nash-bender':id=>{_matVis(id,{
+    title:'Bender vs. Jibson — Cartel Cheating Game',
+    rp:'Bender',cp:'Jibson',rs:['Cheat','Not Cheat'],cs:['Cheat','Not Cheat'],
+    cells:[[{a:'$10k',b:'$5k'},{a:'$25k',b:'$20k'}],[{a:'$5k',b:'$15k'},{a:'$20k',b:'$25k'}]],
+    crA:[[0,0],[0,1]], // Bender always prefers Cheat
+    crB:[[0,1],[1,1]], // Jibson always prefers Not Cheat
+    nash:[0,1],
+    steps:['<strong>Bender:</strong> Cheat always better ($10k>$5k; $25k>$20k) → Dominant = Cheat',
+           '<strong>Jibson:</strong> Not Cheat always better ($20k>$5k; $25k>$15k) → Dominant = Not Cheat',
+           '<strong>★ Nash = Bender Cheat / Jibson Not Cheat = $25,000/$20,000</strong>']
+  })},
+  // BetterCook vs Scheff (AP FRQ)
+  'nash-bettercook':id=>{_matVis(id,{
+    title:'BetterCook vs. Scheff — Patent Expires',
+    rp:'BetterCook',cp:'Scheff',rs:['Maintain Price','Lower Price'],cs:['Advertise','Not Adv.'],
+    cells:[[{a:'$400',b:'$150'},{a:'$600',b:'$250'}],[{a:'$300',b:'$650'},{a:'$200',b:'$450'}]],
+    crA:[[0,0],[0,1]], // BetterCook always prefers Maintain
+    crB:[[0,1],[1,0]], // Scheff: Not Adv if BC Maintains, Adv if BC Lowers
+    nash:[0,1],
+    steps:['<strong>BetterCook:</strong> Maintain always better ($400>$300; $600>$200) → Dominant = Maintain',
+           '<strong>Scheff:</strong> Not Adv if BC Maintains ($250>$150); Adv if BC Lowers ($650>$450) → No dominant',
+           '<strong>★ Nash = Maintain / Not Advertise = $600/$250</strong>']
+  })},
+  // Fields' Fun House vs Amazing Jake's (textbook)
+  'nash-fields':id=>{_matVis(id,{
+    title:"Fields' Fun House vs. Amazing Jake's",
+    rp:"Fields'",cp:"Jake's",rs:['High','Low'],cs:['High','Low'],
+    cells:[[{a:'$30',b:'$35'},{a:'$20',b:'$30'}],[{a:'$15',b:'$15'},{a:'$5',b:'$20'}]],
+    crA:[[0,0],[0,1]], // Fields always prefers High
+    crB:[[0,0],[1,1]], // Jake: High if Fields High ($35>$30); Low if Fields Low ($20>$15)
+    nash:[0,0],
+    steps:["<strong>Fields':</strong> High always better ($30>$15; $20>$5) → Dominant = High",
+           "<strong>Jake's:</strong> High when Fields High ($35>$30); Low when Fields Low ($20>$15) → No dominant (dependent)",
+           "<strong>★ Nash = Both High = $30/$35</strong> (Jake's best response to Fields' dominant strategy)"]
+  })},
+  // Coke vs Pepsi advertising (workbook)
+  'nash-copepsi':id=>{_matVis(id,{
+    title:"Coke vs. Pepsi — Advertising Prisoner's Dilemma",
+    rp:'Pepsi',cp:'Coke',rs:['Advertise',"Don't Adv."],cs:['Advertise',"Don't Adv."],
+    cells:[[{a:'$30',b:'$30'},{a:'$50',b:'$20'}],[{a:'$20',b:'$50'},{a:'$40',b:'$40'}]],
+    crA:[[0,0],[0,1]], // Pepsi always prefers Advertise
+    crB:[[0,0],[1,0]], // Coke always prefers Advertise
+    nash:[0,0],
+    steps:['<strong>Pepsi:</strong> Adv always better ($30>$20; $50>$40) → Dominant = Advertise',
+           '<strong>Coke:</strong> Adv always better ($30>$20; $50>$40) → Dominant = Advertise',
+           "<strong>★ Nash = Both Advertise ($30,$30)</strong> — Prisoner's Dilemma: Both Don't would give $40/$40!"]
+  })},
+  // Generic Prisoner's Dilemma matrix (Q: High=40/40, High-Low=20/50, Low-High=50/20, Low=30/30)
+  'nash-prison':id=>{_matVis(id,{
+    title:"Prisoner's Dilemma — Firm A vs. Firm B",
+    rp:'Firm A',cp:'Firm B',rs:['High','Low'],cs:['High','Low'],
+    cells:[[{a:'$40',b:'$40'},{a:'$20',b:'$50'}],[{a:'$50',b:'$20'},{a:'$30',b:'$30'}]],
+    crA:[[1,0],[1,1]], // A always prefers Low
+    crB:[[0,1],[1,1]], // B always prefers Low
+    nash:[1,1],
+    steps:['<strong>Firm A:</strong> Low always better ($50>$40; $30>$20) → Dominant = Low',
+           '<strong>Firm B:</strong> Low always better ($50>$40; $30>$20) → Dominant = Low',
+           "<strong>★ Nash = Both Low ($30,$30)</strong> — Prisoner's Dilemma: Both High ($40,$40) is better but neither will play it!"]
+  })},
+  // Attaburger vs Beefsteak
+  'nash-attaburger':id=>{_matVis(id,{
+    title:'Attaburger vs. Beefsteak — Price Game',
+    rp:'Attaburger',cp:'Beefsteak',rs:['High','Low'],cs:['High','Low'],
+    cells:[[{a:'$11',b:'$12'},{a:'$6',b:'$15'}],[{a:'$14',b:'$5'},{a:'$12',b:'$8'}]],
+    crA:[[1,0],[1,1]], // Attaburger always prefers Low
+    crB:[[0,1],[1,1]], // Beefsteak: High when A=High ($12>$5... wait: High/High=$12 vs High/Low=$15 — when A=High, B prefers Low($15>$12); when A=Low, B prefers Low($8>$5)
+    nash:[1,1],
+    steps:['<strong>Attaburger:</strong> Low always better ($14>$11; $12>$6) → Dominant = Low',
+           '<strong>Beefsteak:</strong> Low always better ($15>$12; $8>$5) → Dominant = Low',
+           '<strong>★ Nash = Both Low = $12/$8</strong> — Incentive to cheat on collusion ($14>$11)']
+  })},
   'pd-comparison':id=>{
     const div=document.getElementById(id);
     div.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px"><div id="${id}A"></div><div id="${id}B"></div></div>`;
@@ -1402,6 +1499,53 @@ function drawVis(visId,type){
   const el2=document.getElementById(visId);
   if(!el2||!VIS[type])return;
   VIS[type](visId);
+}
+
+// ── Payoff matrix visual builder ──────────────────────────────────────────────
+function _matVis(id, cfg){
+  // cfg: { title, rp(row player), cp(col player), rs[2](row strats), cs[2](col strats),
+  //        cells[2][2] each {a,b}, crA[[r,c]...], crB[[r,c]...], nash[r,c], steps[] }
+  const {title,rp,cp,rs,cs,cells,crA,crB,nash,steps}=cfg;
+  const isCA=(r,c)=>crA.some(x=>x[0]===r&&x[1]===c);
+  const isCB=(r,c)=>crB.some(x=>x[0]===r&&x[1]===c);
+  const isN=(r,c)=>nash[0]===r&&nash[1]===c;
+  const val=(r,c,p)=>{
+    const v=p==='a'?cells[r][c].a:cells[r][c].b;
+    const circ=p==='a'&&isCA(r,c)?`<span style="display:inline-block;border:2.5px solid #2563eb;border-radius:50%;padding:0 4px;line-height:1.5">${v}</span>`:
+                p==='b'&&isCB(r,c)?`<span style="display:inline-block;border:2.5px solid #dc2626;border-radius:50%;padding:0 4px;line-height:1.5">${v}</span>`:v;
+    return circ;
+  };
+  const cell=(r,c)=>{
+    const bg=isN(r,c)?'background:#fef9c3;border:2.5px solid #fbbf24;':'background:#fff;border:1.5px solid #e5e7eb;';
+    const star=isN(r,c)?' ★':'';
+    return `<td style="padding:9px 10px;text-align:center;font-size:13px;font-weight:600;${bg}">${val(r,c,'a')} / ${val(r,c,'b')}${star}</td>`;
+  };
+  const thS='padding:7px 9px;border:1.5px solid #e5e7eb;font-size:11.5px;font-weight:700;';
+  document.getElementById(id).innerHTML=`
+  <div style="font-size:11.5px;font-weight:700;color:#374151;margin-bottom:6px;text-align:center">${title}</div>
+  <table style="border-collapse:collapse;width:100%;margin:0 auto 8px">
+    <tr>
+      <th style="${thS}background:#fff"></th>
+      <th style="${thS}background:#fff"></th>
+      <th style="${thS}background:#fef2f2;color:#dc2626">${cp}: ${cs[0]}</th>
+      <th style="${thS}background:#fef2f2;color:#dc2626">${cp}: ${cs[1]}</th>
+    </tr>
+    <tr>
+      <th rowspan="2" style="${thS}background:#eff6ff;color:#2563eb;writing-mode:vertical-rl;transform:rotate(180deg)">${rp}</th>
+      <th style="${thS}background:#eff6ff;color:#2563eb">${rs[0]}</th>
+      ${cell(0,0)}${cell(0,1)}
+    </tr>
+    <tr>
+      <th style="${thS}background:#eff6ff;color:#2563eb">${rs[1]}</th>
+      ${cell(1,0)}${cell(1,1)}
+    </tr>
+  </table>
+  <div style="font-size:10.5px;color:#374151;line-height:1.7;background:#f8fafc;border-radius:5px;padding:6px 8px">
+    <span style="color:#374151;font-weight:700">Legend:</span> 
+    <span style="border:1.5px solid #2563eb;border-radius:50%;padding:0 3px;font-size:10px">🔵</span> ${rp}'s best response &nbsp;
+    <span style="border:1.5px solid #dc2626;border-radius:50%;padding:0 3px;font-size:10px">🔴</span> ${cp}'s best response &nbsp;★ Nash Eq.
+    ${steps.map(s=>`<div style="margin-top:3px">→ ${s}</div>`).join('')}
+  </div>`;
 }
 
 // ════════════════════════════════════════════════════
@@ -1489,17 +1633,17 @@ const Qoligo=[
   {text:"BetterCook's patent expires. Scheff plans to enter. [Matrix: BC Maintain/Scheff Adv = $400/$150; Maintain/Not Adv = $600/$250; Lower/Adv = $300/$650; Lower/Not Adv = $200/$450.] Does Scheff have a dominant strategy?",opts:["Yes, Scheff's dominant strategy is to Advertise","Yes, Scheff's dominant strategy is to Not Advertise","No, Scheff has a dependent (non-dominant) strategy — best choice depends on BetterCook's action","No, neither player has a dominant strategy","Yes, both players have the dominant strategy of Not Advertising"],ans:2,
    exp:"<strong>Scheff has a dependent strategy — no dominant strategy.</strong> Scheff's analysis: If BetterCook Maintains → Not Adv gives $250 > Adv gives $150 → prefer Not Adv. If BetterCook Lowers → Adv gives $650 > Not Adv gives $450 → prefer Adv. Different best responses in each case → <strong>Dependent strategy.</strong> BetterCook, by contrast, has a dominant strategy: Maintain always yields more ($400 > $300 if Scheff Adv; $600 > $200 if Scheff Not Adv). Nash equilibrium = BetterCook Maintains / Scheff Not Adv = $600/$250.",vis:'nash-bettercook'},
   {text:'Why are cartels (explicit collusion agreements) inherently unstable?',opts:["Because governments always detect and break them up before they can form","Because each individual member firm has a private incentive to cheat by undercutting the agreed price",'Because cartel members can never agree on the "right" monopoly price','Because collusion always reduces total profits for all members','Because oligopolies have perfectly elastic demand curves'],ans:1,
-   exp:"<strong>Each firm individually gains by cheating on the cartel agreement.</strong> When all other members stick to the high price, a cheating firm can steal customers by slightly undercutting, dramatically increasing its own profit. The dominant strategy for every firm is to cheat. This creates a Prisoner's Dilemma: the Nash equilibrium (all cheat) is worse for everyone than the cooperative outcome (all comply), but self-interest drives each firm to defect. Additionally, cartels are illegal under U.S. antitrust laws (Sherman Act), adding external enforcement pressure.",vis:'dominant-strat'},
+   exp:"<strong>Each firm individually gains by cheating on the cartel agreement.</strong> When all other members stick to the high price, a cheating firm can steal customers by slightly undercutting, dramatically increasing its own profit. The dominant strategy for every firm is to cheat. This creates a Prisoner's Dilemma: the Nash equilibrium (all cheat) is worse for everyone than the cooperative outcome (all comply), but self-interest drives each firm to defect. Additionally, cartels are illegal under U.S. antitrust laws (Sherman Act), adding external enforcement pressure.",vis:'nash-prison'},
   {text:'A market is dominated by four large firms that each sell similar products and use non-price competition. Which of the following must be true?',opts:['The firms are mutually interdependent when making pricing and output decisions','The firms are allocatively efficient','The market is perfectly competitive','The firms will be regulated by the government','The market is monopolistically competitive'],ans:0,
    exp:"<strong>Mutual interdependence is the defining feature of oligopoly.</strong> With only four large firms, each firm's decisions (price, output, advertising) significantly affect the others, and each must consider rivals' likely reactions. This strategic interdependence — thinking about what the rival will do before making your own choice — is unique to oligopoly. This is why game theory applies to oligopoly but NOT to perfect competition (too many firms) or monopoly (only one firm). The use of non-price competition and similar products is also consistent with oligopoly.",vis:'dominant-strat'},
   {text:"Using the payoff matrix below, what is the Nash equilibrium? [Matrix: Both High = $40/$40; A High/B Low = $20/$50; A Low/B High = $50/$20; Both Low = $30/$30]",opts:['Both choose High (40, 40)','Both choose Low (30, 30)','A High, B Low (20, 50)','A Low, B High (50, 20)','No Nash equilibrium exists'],ans:1,
-   exp:"<strong>Nash equilibrium = Both choose Low (30, 30) — a Prisoner's Dilemma.</strong> Firm A: If B chooses High → A gets 50(Low) > 40(High) → circle Low. If B chooses Low → A gets 30(Low) > 20(High) → circle Low. <strong>A's dominant = Low.</strong> Firm B: Same analysis by symmetry → <strong>B's dominant = Low.</strong> Both circles land in the Low/Low cell → Nash equilibrium at (30, 30). This is a Prisoner's Dilemma: mutual cooperation (High/High = 40/40) would be better for both, but the dominant strategy pulls both to the worse outcome (30/30).",vis:'dominant-strat'},
+   exp:"<strong>Nash equilibrium = Both choose Low (30, 30) — a Prisoner's Dilemma.</strong> Firm A: If B chooses High → A gets 50(Low) > 40(High) → circle Low. If B chooses Low → A gets 30(Low) > 20(High) → circle Low. <strong>A's dominant = Low.</strong> Firm B: Same analysis by symmetry → <strong>B's dominant = Low.</strong> Both circles land in the Low/Low cell → Nash equilibrium at (30, 30). This is a Prisoner's Dilemma: mutual cooperation (High/High = 40/40) would be better for both, but the dominant strategy pulls both to the worse outcome (30/30).",vis:'nash-prison'},
   {text:'Which of the following describes the situation where oligopolists collude and agree to jointly set prices?',opts:['Excess capacity model','Dominant strategy model','Cartel model','Kinked demand curve model','Game theory model'],ans:2,
    exp:'<strong>A cartel is a colluding oligopoly — firms acting jointly like a monopoly.</strong> When firms in an oligopoly formally agree to coordinate prices, output, or market division, they form a cartel. OPEC (oil) is the most famous example. The cartel attempts to set the monopoly price and restrict output, maximizing joint profit. However, as game theory shows, each member has an individual incentive to cheat (produce more at the agreed-upon high price and gain extra customers from rivals). This is why cartels are inherently unstable and why they are illegal in the U.S.',vis:'dominant-strat'},
   {text:'[Scanned Textbook] Fields\' Fun House has a dominant strategy of charging HIGH prices. Amazing Jake\'s has NO dominant strategy. Both firms know all the information. What is the Nash equilibrium? [Matrix: High/High = $30/$35; High(F)/Low(J) = $20/$30; Low(F)/High(J) = $15/$15; Low/Low = $5/$20]',opts:['Both firms charge Low: ($5, $20)','Fields High / Jake Low: ($20, $30)','Both firms charge High: ($30, $35)','Fields Low / Jake High: ($15, $15)','No Nash equilibrium exists'],ans:2,
-   exp:"<strong>Nash = Both High ($30, $35).</strong> Step 1 — Fields' analysis: If Jake High → $30(H)>$15(L); If Jake Low → $20(H)>$5(L). Both circles in High row → <strong>Fields' dominant = High.</strong> Step 2 — Jake's analysis: If Fields High → $35(H)>$30(L) → circle High; If Fields Low → $15(H)&lt;$20(L) → circle Low. Different rows → <strong>Jake has no dominant strategy (dependent).</strong> Step 3 — Nash: Since Fields ALWAYS plays High, Jake's best response is High ($35 > $30). Two circles meet at High/High → Nash = ($30, $35). From the textbook answer key: 'Fields' will use its dominant strategy (High). Jake's knows Fields' will go high, so Jake's best option is also High.'",vis:'nash-cromie'},
+   exp:"<strong>Nash = Both High ($30, $35).</strong> Step 1 — Fields' analysis: If Jake High → $30(H)>$15(L); If Jake Low → $20(H)>$5(L). Both circles in High row → <strong>Fields' dominant = High.</strong> Step 2 — Jake's analysis: If Fields High → $35(H)>$30(L) → circle High; If Fields Low → $15(H)&lt;$20(L) → circle Low. Different rows → <strong>Jake has no dominant strategy (dependent).</strong> Step 3 — Nash: Since Fields ALWAYS plays High, Jake's best response is High ($35 > $30). Two circles meet at High/High → Nash = ($30, $35). From the textbook answer key: 'Fields' will use its dominant strategy (High). Jake's knows Fields' will go high, so Jake's best option is also High.'",vis:'nash-fields'},
   {text:'[Scanned Workbook — Prisoner\'s Dilemma] In the Coke vs. Pepsi advertising game: if both advertise, payoffs are (Pepsi: $45, Coke: $20). If only Pepsi advertises: ($45, $20). If only Coke advertises: ($100, $100). If neither advertises: ($100, $100). What is the Nash equilibrium and is this a Prisoner\'s Dilemma?',opts:['Nash = neither advertises; not a Prisoner\'s Dilemma','Nash = both advertise; yes it is a Prisoner\'s Dilemma — both advertising is worse than mutual non-advertising','Nash = only Coke advertises; not a Prisoner\'s Dilemma','Nash = only Pepsi advertises; not a Prisoner\'s Dilemma','No Nash equilibrium exists in this game'],ans:1,
-   exp:"<strong>Nash = both advertise; this IS a Prisoner's Dilemma.</strong> Each firm's dominant strategy is to advertise (advertising is always the better choice regardless of rival's action — if rival doesn't advertise, you gain huge market share by advertising; if rival advertises, you must defend your share). When both advertise, profit is lower than if neither advertised. This perfectly illustrates the Prisoner's Dilemma: mutual cooperation (don't advertise) would benefit both, but self-interest (advertise) leads each firm to the dominant strategy. The workbook states: 'the Nash Equilibrium is both players deciding to Advertise. Although both Coke and Pepsi would be better off if they both didn't advertise...'",vis:'dominant-strat'},
+   exp:"<strong>Nash = both advertise; this IS a Prisoner's Dilemma.</strong> Each firm's dominant strategy is to advertise (advertising is always the better choice regardless of rival's action — if rival doesn't advertise, you gain huge market share by advertising; if rival advertises, you must defend your share). When both advertise, profit is lower than if neither advertised. This perfectly illustrates the Prisoner's Dilemma: mutual cooperation (don't advertise) would benefit both, but self-interest (advertise) leads each firm to the dominant strategy. The workbook states: 'the Nash Equilibrium is both players deciding to Advertise. Although both Coke and Pepsi would be better off if they both didn't advertise...'",vis:'nash-copepsi'},
   {text:'In the long run, a monopolistically competitive firm in equilibrium is MOST similar to a monopoly in which one respect?',opts:['Both produce at minimum average total cost','Both achieve allocative efficiency (P = MC)','Both earn zero economic profit in the long run','Both face a downward-sloping demand curve and charge P > MC','Both have high barriers to entry preventing long-run profit erosion'],ans:3,
    exp:"<strong>Both monopoly and MC face downward-sloping demand and charge P > MC.</strong> This is the key similarity: unlike perfect competition (P = MC, allocatively efficient), both monopoly and monopolistic competition have MR below their demand curve. The profit-maximizing rule MR=MC means that in both cases, price ends up above marginal cost — allocative inefficiency. The key difference is that MC has free entry (so LR profit = 0 and the demand curve shifts to the tangency point), while monopoly maintains barriers (LR profit > 0).",vis:'mc-lr'},
   {text:'Prescott Pharmaceuticals holds patents on three drugs and is an unregulated monopolist. Its profit-maximizing quantity will ALWAYS be:',opts:['Where marginal revenue equals price','Where price equals marginal cost','Where the MC curve intersects the demand curve','In the inelastic region of its demand curve (where MR < 0)','In the elastic region of its demand curve (where MR > 0)'],ans:4,
@@ -1848,7 +1992,7 @@ function _dgmLoss(){
 // ── NATURAL MONOPOLY ───────────────────────────────
 function _dgmNat(){
   const DN=q=>120-3*q,MRN=q=>120-6*q,MCN=q=>5+q/5,ATCN=q=>q>0?400/q+5+q/10:999;
-  const g=new G('g-gnat',{W:580,H:345,m:{l:56,t:16,r:56,b:42},mQ:44,mP:130});
+  const g=new G('g-gnat',{W:480,H:280,m:{l:50,t:14,r:50,b:40},mQ:44,mP:130});
   const QS=18.5,PS=DN(18.5),ATCS=ATCN(18.5);
   const QFR=33,PFR=DN(33);
   const QSOC=35.9,PSOC=DN(35.9);
@@ -1873,7 +2017,7 @@ function _dgmNat(){
 
 // ── MONOPOLY: ALL AREAS ────────────────────────────
 function _dgmAreas(){
-  const g=new G('g-gm-areas',{W:580,H:345,m:{l:56,t:16,r:56,b:42},mQ:30,mP:110});
+  const g=new G('g-gm-areas',{W:480,H:280,m:{l:50,t:14,r:50,b:40},mQ:30,mP:110});
   // CS triangle: (0,100),(0,70),(15,70)
   g.tri([[0,100],[0,70],[15,70]],'#3b82f6',.22);
   // Profit rect
@@ -1952,7 +2096,7 @@ function _dgmcAdj(){
   const QLR=Math.sqrt(30),PLR=_ATC(QLR);
   const D1=q=>90-3*q,MR1=q=>90-6*q; // SR profit demand
   const D2=q=>PLR+3*QLR-3*q; // LR demand
-  const g=new G('g-gmc-adj',{W:580,H:345,m:{l:56,t:16,r:56,b:42},mQ:28,mP:105});
+  const g=new G('g-gmc-adj',{W:480,H:280,m:{l:50,t:14,r:50,b:40},mQ:28,mP:105});
   // SR profit shading
   g.rect(0,30,10,60,'#22c55e',.15);
   g.cv(D1,.5,27,'#2563eb',1.5,'5,4','D₁ (SR)');
@@ -2032,7 +2176,7 @@ function _dgpcLR(){
 // ── PC: SHUTDOWN ───────────────────────────────────
 function _dgpcShut(){
   // Show both cases: stay open (P>AVC) and shutdown (P<AVC)
-  const g=new G('g-gpc-shut',{W:580,H:345,m:{l:56,t:16,r:56,b:42},mQ:28,mP:80});
+  const g=new G('g-gpc-shut',{W:480,H:280,m:{l:50,t:14,r:50,b:40},mQ:28,mP:80});
   // P_stay = 22, P_shut = 6
   const Pstay=22,Pshut=6;
   // Stay open region (above min AVC)
@@ -2059,7 +2203,7 @@ function _dgpcShut(){
 
 // ── PD: STANDARD ───────────────────────────────────
 function _dgpdStd(){
-  const g=new G('g-gpd-std',{W:580,H:370,m:{l:56,t:16,r:56,b:44},mQ:30,mP:110});
+  const g=new G('g-gpd-std',{W:460,H:300,m:{l:50,t:14,r:50,b:40},mQ:30,mP:110});
   g.tri([[0,100],[0,70],[15,70]],'#3b82f6',.22);
   g.rect(0,31,15,70,'#22c55e',.28);
   g.tri([[15,70],[15,40],[22.5,55]],'#ef4444',.35);
@@ -2075,7 +2219,7 @@ function _dgpdStd(){
 
 // ── PD: PERFECT ────────────────────────────────────
 function _dgpdPerf(){
-  const g=new G('g-gpd-perf',{W:580,H:370,m:{l:56,t:16,r:56,b:44},mQ:30,mP:110});
+  const g=new G('g-gpd-perf',{W:460,H:300,m:{l:50,t:14,r:50,b:40},mQ:30,mP:110});
   // All profit: triangle from D to MC, Q=0 to Qc
   g.tri([[0,100],[0,10],[22.5,55]],'#22c55e',.28);
   g.vd(22.5,0,55,'#16a34a');g.hd(55,0,22.5,'#16a34a');
