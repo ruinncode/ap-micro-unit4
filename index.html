@@ -1737,23 +1737,24 @@ function ck(pfx,qi,chosen,correct,cid){
     ${q.vis?`<div class="fb-vis"><div class="fb-vis-lbl">📊 Visual</div><div id="${visId}"></div></div>`:''}
   </div>`;
   if(q.vis)setTimeout(()=>drawVis(visId,q.vis),20);
-  // Inject "Practice More" button when wrong and followup questions exist
-  if(!isOk){
-    const concept=q.vis||'';
-    if(FOLLOWUP[concept]){
-      const fqId=cid+'_fq';
-      const card=document.getElementById(cid);
-      if(card&&!document.getElementById('fqctn_'+fqId)){
-        const btn=document.createElement('button');
-        btn.id='fqbtn_'+fqId;
-        btn.className='practice-btn';
-        btn.innerHTML='💪 Practice This Concept &rarr;';
-        btn.onclick=()=>launchFollowup(concept,fqId,btn);
-        const fqctn=document.createElement('div');
-        fqctn.id='fqctn_'+fqId;
-        card.appendChild(btn);
-        card.appendChild(fqctn);
-      }
+  // Inject "Practice More" button for all answers (wrong = orange, correct = subtle)
+  const concept=q.vis||'';
+  if(FOLLOWUP[concept]){
+    const fqId=cid+'_fq';
+    const card=document.getElementById(cid);
+    if(card&&!document.getElementById('fqctn_'+fqId)){
+      const btn=document.createElement('button');
+      btn.id='fqbtn_'+fqId;
+      btn.className='practice-btn';
+      btn.style.cssText=isOk
+        ?'margin-top:10px;border-color:#d1d5db;background:#f9fafb;color:#6b7280;font-size:12.5px'
+        :'margin-top:10px;font-size:13px';
+      btn.innerHTML=isOk?'🔁 Extra Practice on This Concept':'💪 Practice This Concept &rarr;';
+      btn.onclick=()=>launchFollowup(concept,fqId,btn);
+      const fqctn=document.createElement('div');
+      fqctn.id='fqctn_'+fqId;
+      card.appendChild(btn);
+      card.appendChild(fqctn);
     }
   }
   const key=pfx+qi;
