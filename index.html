@@ -314,26 +314,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="card mt4">
       <h3>📊 MR Curve Properties — Annotated Visual</h3>
       <p class="muted mb4">Model: <strong>D = 100 − 2Q</strong> and <strong>MR = 100 − 4Q</strong>. Every numbered callout ①–⑥ matches the list above. The TR graph below shows exactly how Total Revenue changes as Q changes.</p>
-      <div class="g2">
-        <div>
-          <div style="font-size:12px;font-weight:700;color:var(--tx-md);text-align:center;margin-bottom:6px">P-Q Graph: Demand &amp; MR Curves</div>
-          <div id="mr-prop-graph" style="background:white;border:1px solid var(--bdr);border-radius:8px;padding:6px"></div>
-          <div class="graph-label-strip mt3">
-            <span class="glabel"><span class="dot" style="background:var(--D)"></span>Demand (D = 100 − 2Q)</span>
-            <span class="glabel"><span class="dot" style="background:var(--MR)"></span>MR (= 100 − 4Q)</span>
-            <span class="glabel"><span class="dot" style="background:#22c55e;opacity:.5"></span>Elastic region</span>
-            <span class="glabel"><span class="dot" style="background:#ef4444;opacity:.5"></span>Inelastic region</span>
-          </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--tx-md);text-align:center;margin-bottom:6px">P-Q Graph: Demand &amp; MR Curves — Annotated</div>
+        <div id="mr-prop-graph" style="background:white;border:1px solid var(--bdr);border-radius:8px;padding:8px"></div>
+        <div class="graph-label-strip mt3">
+          <span class="glabel"><span class="dot" style="background:var(--D)"></span>Demand (D = 100 − 2Q)</span>
+          <span class="glabel"><span class="dot" style="background:var(--MR)"></span>MR (= 100 − 4Q)</span>
+          <span class="glabel"><span class="dot" style="background:#22c55e;opacity:.6"></span>Elastic region (MR &gt; 0)</span>
+          <span class="glabel"><span class="dot" style="background:#ef4444;opacity:.6"></span>Inelastic region (MR &lt; 0)</span>
         </div>
-        <div>
-          <div style="font-size:12px;font-weight:700;color:var(--tx-md);text-align:center;margin-bottom:6px">TR Graph: Total Revenue = P × Q</div>
-          <div id="tr-prop-graph" style="background:white;border:1px solid var(--bdr);border-radius:8px;padding:6px"></div>
-          <div class="cb g mt3"><h4>Why TR and MR are Linked</h4><ul>
-            <li><strong>MR &gt; 0</strong> (elastic, Q &lt; 25): selling one more unit <em>adds</em> to TR → TR curve slopes up</li>
-            <li><strong>MR = 0</strong> (unit elastic, Q = 25): one more unit adds exactly $0 to TR → TR is at peak</li>
-            <li><strong>MR &lt; 0</strong> (inelastic, Q &gt; 25): selling one more unit <em>reduces</em> TR → TR curve slopes down</li>
-          </ul></div>
-        </div>
+      </div>
+      <div class="mt4">
+        <div style="font-size:12px;font-weight:700;color:var(--tx-md);text-align:center;margin-bottom:6px">TR Graph: Total Revenue = P × Q</div>
+        <div id="tr-prop-graph" style="background:white;border:1px solid var(--bdr);border-radius:8px;padding:8px"></div>
+        <div class="cb g mt3"><h4>Why TR and MR are Linked</h4><ul>
+          <li><strong>MR &gt; 0</strong> (elastic, Q &lt; 25): selling one more unit <em>adds</em> to TR → TR curve slopes up</li>
+          <li><strong>MR = 0</strong> (unit elastic, Q = 25): one more unit adds exactly $0 to TR → TR is at peak</li>
+          <li><strong>MR &lt; 0</strong> (inelastic, Q &gt; 25): selling one more unit <em>reduces</em> TR → TR curve slopes down</li>
+        </ul></div>
       </div>
     </div>
   </div>
@@ -984,7 +982,7 @@ function el(tag,a){const e=document.createElementNS(NS,tag);Object.entries(a).fo
 class G {
   constructor(cid,o={}){
     this.c=document.getElementById(cid);
-    this.W=o.W||500;this.H=o.H||330;
+    this.W=o.W||580;this.H=o.H||370;
     this.m=o.m||{l:56,t:14,r:38,b:42};
     this.pw=this.W-this.m.l-this.m.r;this.ph=this.H-this.m.t-this.m.b;
     this.mQ=o.mQ||30;this.mP=o.mP||110;
@@ -1089,7 +1087,7 @@ function drawNatMono(){
 // PRICE DISCRIMINATION GRAPHS
 // ════════════════════════════════════════════════════
 function drawPD(){
-  (()=>{const g=new G('g-pd-std',{W:460,H:290,mQ:28,mP:110});
+  (()=>{const g=new G('g-pd-std',{W:580,H:365,mQ:28,mP:110});
     g.tri([[0,100],[0,PS],[QS,PS]],'#3b82f6',.18);
     g.rect(0,ATC_S,QS,PS,'#22c55e',.22);
     g.tri([[QS,PS],[QS,MC_S],[QC,PC]],'#ef4444',.32);
@@ -1099,7 +1097,7 @@ function drawPD(){
     g.dot(QS,PS,'#2563eb');g.axL(QS,'Q*');g.prL(PS,'P*');g.prL(ATC_S,'ATC*');
     g.aL(4,(100+PS)/2,'CS','#2563eb');g.aL(QS/2,(PS+ATC_S)/2,'π','#16a34a');g.aL(QS+2,(PS+MC_S)/2,'DWL','#dc2626');
   })();
-  (()=>{const g=new G('g-pd-perf',{W:460,H:290,mQ:28,mP:110});
+  (()=>{const g=new G('g-pd-perf',{W:580,H:365,mQ:28,mP:110});
     g.tri([[0,100],[0,10],[QC,PC]],'#22c55e',.22);
     g.vd(QC,0,PC,'#16a34a');g.hd(PC,0,QC,'#16a34a');
     g.cv(D,.5,27,'#2563eb',3,'','D = MR');
@@ -1165,7 +1163,7 @@ function _prep(cid){if(!document.getElementById(cid))return;return cid}
 
 const VIS={
   'mr-below-d':id=>{
-    const g=new G(id,{W:300,H:185,m:{l:38,t:10,r:46,b:30},mQ:25,mP:110});
+    const g=new G(id,{W:400,H:248,m:{l:48,t:13,r:58,b:38},mQ:25,mP:110});
     g.cv(D,.5,24,'#2563eb',2.5,'','D');g.cv(MR,.5,23,'#dc2626',2.5,'','MR');
     g.vd(10,MR(10),D(10));g.dot(10,D(10),'#2563eb',4);g.dot(10,MR(10),'#dc2626',4);
     g.hd(D(10),0,10,'#2563eb');g.hd(MR(10),0,10,'#dc2626');
@@ -1625,9 +1623,9 @@ function drawMRPropertiesVisual() {
 }
 
 function _buildMRGraph() {
-  const W=440, H=310, ml=52, mt=14, mr=24, mb=30;
-  const pw=W-ml-mr, ph=H-mt-mb; // 364 × 266
-  const Pmax=110, Pmin=-36, Pr=Pmax-Pmin, Qmax=55; // P range = 146
+  const W=680, H=440, ml=60, mt=18, mr=30, mb=38;
+  const pw=W-ml-mr, ph=H-mt-mb; // 590 × 384
+  const Pmax=110, Pmin=-40, Pr=Pmax-Pmin, Qmax=55; // P range = 150
   const gx=q=>ml+(q/Qmax)*pw;
   const gy=p=>mt+((Pmax-p)/Pr)*ph;
   const svg=el('svg',{viewBox:`0 0 ${W} ${H}`,width:'100%'});
@@ -1716,7 +1714,7 @@ function _buildMRGraph() {
 }
 
 function _buildTRPropGraph() {
-  const W=440, H=195, ml=52, mt=12, mr=24, mb=28;
+  const W=680, H=260, ml=60, mt=14, mr=30, mb=34;
   const pw=W-ml-mr, ph=H-mt-mb;
   const Qmax=55, TRmax=1300;
   const gx=q=>ml+(q/Qmax)*pw;
@@ -1850,7 +1848,7 @@ function _dgmLoss(){
 // ── NATURAL MONOPOLY ───────────────────────────────
 function _dgmNat(){
   const DN=q=>120-3*q,MRN=q=>120-6*q,MCN=q=>5+q/5,ATCN=q=>q>0?400/q+5+q/10:999;
-  const g=new G('g-gnat',{W:480,H:280,m:{l:50,t:14,r:50,b:40},mQ:44,mP:130});
+  const g=new G('g-gnat',{W:580,H:345,m:{l:56,t:16,r:56,b:42},mQ:44,mP:130});
   const QS=18.5,PS=DN(18.5),ATCS=ATCN(18.5);
   const QFR=33,PFR=DN(33);
   const QSOC=35.9,PSOC=DN(35.9);
@@ -1875,7 +1873,7 @@ function _dgmNat(){
 
 // ── MONOPOLY: ALL AREAS ────────────────────────────
 function _dgmAreas(){
-  const g=new G('g-gm-areas',{W:480,H:280,m:{l:50,t:14,r:50,b:40},mQ:30,mP:110});
+  const g=new G('g-gm-areas',{W:580,H:345,m:{l:56,t:16,r:56,b:42},mQ:30,mP:110});
   // CS triangle: (0,100),(0,70),(15,70)
   g.tri([[0,100],[0,70],[15,70]],'#3b82f6',.22);
   // Profit rect
@@ -1954,7 +1952,7 @@ function _dgmcAdj(){
   const QLR=Math.sqrt(30),PLR=_ATC(QLR);
   const D1=q=>90-3*q,MR1=q=>90-6*q; // SR profit demand
   const D2=q=>PLR+3*QLR-3*q; // LR demand
-  const g=new G('g-gmc-adj',{W:480,H:280,m:{l:50,t:14,r:50,b:40},mQ:28,mP:105});
+  const g=new G('g-gmc-adj',{W:580,H:345,m:{l:56,t:16,r:56,b:42},mQ:28,mP:105});
   // SR profit shading
   g.rect(0,30,10,60,'#22c55e',.15);
   g.cv(D1,.5,27,'#2563eb',1.5,'5,4','D₁ (SR)');
@@ -2034,7 +2032,7 @@ function _dgpcLR(){
 // ── PC: SHUTDOWN ───────────────────────────────────
 function _dgpcShut(){
   // Show both cases: stay open (P>AVC) and shutdown (P<AVC)
-  const g=new G('g-gpc-shut',{W:480,H:280,m:{l:50,t:14,r:50,b:40},mQ:28,mP:80});
+  const g=new G('g-gpc-shut',{W:580,H:345,m:{l:56,t:16,r:56,b:42},mQ:28,mP:80});
   // P_stay = 22, P_shut = 6
   const Pstay=22,Pshut=6;
   // Stay open region (above min AVC)
@@ -2061,7 +2059,7 @@ function _dgpcShut(){
 
 // ── PD: STANDARD ───────────────────────────────────
 function _dgpdStd(){
-  const g=new G('g-gpd-std',{W:460,H:300,m:{l:50,t:14,r:50,b:40},mQ:30,mP:110});
+  const g=new G('g-gpd-std',{W:580,H:370,m:{l:56,t:16,r:56,b:44},mQ:30,mP:110});
   g.tri([[0,100],[0,70],[15,70]],'#3b82f6',.22);
   g.rect(0,31,15,70,'#22c55e',.28);
   g.tri([[15,70],[15,40],[22.5,55]],'#ef4444',.35);
@@ -2077,7 +2075,7 @@ function _dgpdStd(){
 
 // ── PD: PERFECT ────────────────────────────────────
 function _dgpdPerf(){
-  const g=new G('g-gpd-perf',{W:460,H:300,m:{l:50,t:14,r:50,b:40},mQ:30,mP:110});
+  const g=new G('g-gpd-perf',{W:580,H:370,m:{l:56,t:16,r:56,b:44},mQ:30,mP:110});
   // All profit: triangle from D to MC, Q=0 to Qc
   g.tri([[0,100],[0,10],[22.5,55]],'#22c55e',.28);
   g.vd(22.5,0,55,'#16a34a');g.hd(55,0,22.5,'#16a34a');
